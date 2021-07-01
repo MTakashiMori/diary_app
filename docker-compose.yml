@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+    web:
+        container_name: diary_app
+        image: mtakashimori/php8
+        command: php artisan serve --host=0.0.0.0 --port=80
+        volumes:
+            - .:/var/www/html/diary_app
+        tty: true
+        entrypoint:  [
+            "/bin/sh",
+            "/var/www/html/diary_app/entrypoint.sh"
+        ]
+        ports:
+            - "8000:80"
+        working_dir: /var/www/html/diary_app
+        depends_on:
+            - db
+        networks:
+            main:
+                aliases:
+                    - web
+    db:
+        container_name: diary_db
+        image: mariadb:10
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./diary-db:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: diary_db
+            MYSQL_USER: user_user
+            MYSQL_PASSWORD: p@ssw0rd
+        networks:
+            main:
+                aliases:
+                    - db
+networks:
+    main:
